@@ -1,28 +1,48 @@
-# Maven
-target/
-!.mvn/wrapper/maven-wrapper.jar
-**/logs/
-*.log
+# Maven target directory
+/target/
 
-# Eclipse
-*.classpath
-*.project
-*.settings/
-
-# IntelliJ
+# IntelliJ IDEA
 *.iml
 .idea/
+*.ipr
+*.iws
 out/
+
+# Eclipse
+.project
+.classpath
+.settings/
+bin/
 
 # VS Code
 .vscode/
 
-# OS files
+# OS-specific
 .DS_Store
 Thumbs.db
 
-# Others
-*.jar
-*.war
-*.ear
+# Logs
+*.log
 
+# Environment variables
+.env
+*.env
+
+# Compiled class files
+*.class
+
+# Spring Boot devtools
+.spring-boot-devtools.properties
+
+# Build and dependency folders
+/.mvn/
+/build/
+
+# Local DBs or test output
+*.h2.db
+*.mv.db
+*.sqlite
+
+# Test reports
+/test-output/
+/surefire-r
