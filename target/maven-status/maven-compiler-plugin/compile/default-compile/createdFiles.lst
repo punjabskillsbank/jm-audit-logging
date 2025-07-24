@@ -1,0 +1,10 @@
+com/jobmatrix/JmAuditLogging/entity/AuditLog$AuditLogBuilder.class
+com/jobmatrix/JmAuditLogging/repository/AuditLogRepository.class
+com/jobmatrix/JmAuditLogging/dto/AuditLogDTO$AuditLogDTOBuilder.class
+com/jobmatrix/JmAuditLogging/dto/AuditLogDTO.class
+com/jobmatrix/JmAuditLogging/config/ModelMapperConfig.class
+com/jobmatrix/JmAuditLogging/consumer/AuditKafkaConsumer.class
+com/jobmatrix/JmAuditLogging/entity/AuditLog.class
+com/jobmatrix/JmAuditLogging/config/AppConfig.class
+com/jobmatrix/JmAuditLogging/enums/EventType.class
+com/jobmatrix/JmAuditLogging/JmAuditLoggingApplication.class

@@ -1,0 +1,8 @@
+/home/jsa/Desktop/jobmatrix/jm-audit-logging/src/main/java/com/jobmatrix/JmAuditLogging/JmAuditLoggingApplication.java
+/home/jsa/Desktop/jobmatrix/jm-audit-logging/src/main/java/com/jobmatrix/JmAuditLogging/config/AppConfig.java
+/home/jsa/Desktop/jobmatrix/jm-audit-logging/src/main/java/com/jobmatrix/JmAuditLogging/config/ModelMapperConfig.java
+/home/jsa/Desktop/jobmatrix/jm-audit-logging/src/main/java/com/jobmatrix/JmAuditLogging/consumer/AuditKafkaConsumer.java
+/home/jsa/Desktop/jobmatrix/jm-audit-logging/src/main/java/com/jobmatrix/JmAuditLogging/dto/AuditLogDTO.java
+/home/jsa/Desktop/jobmatrix/jm-audit-logging/src/main/java/com/jobmatrix/JmAuditLogging/entity/AuditLog.java
+/home/jsa/Desktop/jobmatrix/jm-audit-logging/src/main/java/com/jobmatrix/JmAuditLogging/enums/EventType.java
+/home/jsa/Desktop/jobmatrix/jm-audit-logging/src/main/java/com/jobmatrix/JmAuditLogging/repository/AuditLogRepository.java
