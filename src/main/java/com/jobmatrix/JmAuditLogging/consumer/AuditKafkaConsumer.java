@@ -32,7 +32,7 @@ public class AuditKafkaConsumer {
                        @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,
                        @Header(KafkaHeaders.OFFSET) long offset,
                        Acknowledgment ack) throws Exception {
-        log.info("📥 Received Kafka message - Key: {}, Partition: {}, Offset: {}, Message: {}", 
+        log.info("Received Kafka message - Key: {}, Partition: {}, Offset: {}, Message: {}",
                 key, partition, offset, message);
 
         try {
@@ -95,9 +95,9 @@ public class AuditKafkaConsumer {
         
         try {
             auditLogRepository.save(auditLog);
-            log.info("✅ Audit log saved for job posting ID: {}", dto.getEntityId());
+            log.info("Audit log saved for job posting ID: {}", dto.getEntityId());
             ack.acknowledge(); // Acknowledge the message after successful processing
-            log.info("✅ Acknowledged message - Key: {}, Partition: {}, Offset: {}", 
+            log.info("Acknowledged message - Key: {}, Partition: {}, Offset: {}",
                     key, partition, offset);
         } catch (Exception e) {
             log.error("❌ Error processing audit log - Key: {}, Partition: {}, Offset: {}: {}", 

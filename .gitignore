@@ -14,7 +14,7 @@ target/
 .idea/
 out/
 
-# VS Code
+# VSCode
 .vscode/
 
 # OS files
