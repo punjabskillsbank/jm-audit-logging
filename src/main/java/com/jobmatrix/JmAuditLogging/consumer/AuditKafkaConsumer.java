@@ -2,6 +2,7 @@ package com.jobmatrix.JmAuditLogging.consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jobmatrix.JmAuditLogging.dto.AuditLogDTO;
+import com.jobmatrix.JmAuditLogging.handlers.AuditHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -11,8 +12,8 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.UUID;
-import com.jobmatrix.JmAuditLogging.handlers.JobPostingAuditHandler;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +21,7 @@ import com.jobmatrix.JmAuditLogging.handlers.JobPostingAuditHandler;
 public class AuditKafkaConsumer {
 
     private final ObjectMapper objectMapper;
-    private final JobPostingAuditHandler jobPostingAuditHandler;
+    private final Map<String, AuditHandler> auditHandlers;
 
     @KafkaListener(topics = "${audit.logging.topic}", groupId = "${spring.kafka.consumer.group-id}", concurrency = "1")
     public void consume(@Payload String message, 
@@ -57,13 +58,14 @@ public class AuditKafkaConsumer {
                 dto.setNewData(rootNode.get("newData").toString());
             }
 
-            switch (dto.getServiceName().toLowerCase()) {
-                case "job-posting":
-                    jobPostingAuditHandler.handleJobPostingAudit(dto, ack, key, partition, offset);
-                    break;
-                default:
-                    log.warn("Unrecognized service name in audit log: {}", dto.getServiceName());
-                    ack.acknowledge();
+            String serviceName = dto.getServiceName().toLowerCase();
+            AuditHandler handler = auditHandlers.get(serviceName);
+            
+            if (handler != null) {
+                handler.handleAudit(dto, ack, key, partition, offset);
+            } else {
+                log.warn("No handler found for service: {}", serviceName);
+                ack.acknowledge();
             }
         } catch (Exception e) {
             log.error("Error processing message - Key: {}, Partition: {}, Offset: {}: {}",

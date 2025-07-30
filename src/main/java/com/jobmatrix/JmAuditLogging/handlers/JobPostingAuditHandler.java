@@ -11,12 +11,13 @@ import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
 @Slf4j
-@Component
+@Component("job-posting")
 @RequiredArgsConstructor
-public class JobPostingAuditHandler {
+public class JobPostingAuditHandler implements AuditHandler {
     private final AuditLogRepository auditLogRepository;
     private final ModelMapper modelMapper;
-    public void handleJobPostingAudit(AuditLogDTO dto, Acknowledgment ack, String key, int partition, long offset) {
+    @Override
+    public void handleAudit(AuditLogDTO dto, Acknowledgment ack, String key, int partition, long offset) throws Exception {
         // Configure ModelMapper to map between DTO and entity
         modelMapper.typeMap(AuditLogDTO.class, AuditLog.class).addMappings(mapper -> {
             mapper.map(AuditLogDTO::getOldData, AuditLog::setOldValue);

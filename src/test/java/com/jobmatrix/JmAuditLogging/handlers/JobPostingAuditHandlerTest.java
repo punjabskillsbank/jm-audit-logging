@@ -51,7 +51,7 @@ class JobPostingAuditHandlerTest {
     }
 
     @Test
-    void handleJobPostingAudit_validDto_savesAndAcknowledges() {
+    void handleAudit_validDto_savesAndAcknowledges() throws Exception {
         // Arrange
         setupModelMapperMocks();
         String key = "test-key";
@@ -59,7 +59,7 @@ class JobPostingAuditHandlerTest {
         long offset = 123L;
 
         // Act
-        jobPostingAuditHandler.handleJobPostingAudit(testDto, ack, key, partition, offset);
+        jobPostingAuditHandler.handleAudit(testDto, ack, key, partition, offset);
 
         // Assert
         verify(modelMapper).typeMap(AuditLogDTO.class, AuditLog.class);
@@ -73,7 +73,7 @@ class JobPostingAuditHandlerTest {
     }
 
     @Test
-    void handleJobPostingAudit_saveFails_throwsExceptionAndDoesNotAcknowledge() {
+    void handleAudit_saveFails_throwsExceptionAndDoesNotAcknowledge() {
         // Arrange
         setupModelMapperMocks();
         String key = "test-key";
@@ -85,7 +85,7 @@ class JobPostingAuditHandlerTest {
 
         // Act & Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            jobPostingAuditHandler.handleJobPostingAudit(testDto, ack, key, partition, offset);
+            jobPostingAuditHandler.handleAudit(testDto, ack, key, partition, offset);
         });
 
         assertEquals(expectedException, exception);
@@ -94,21 +94,21 @@ class JobPostingAuditHandlerTest {
     }
 
     @Test
-    void handleJobPostingAudit_nullDto_throwsException() {
+    void handleAudit_nullDto_throwsException() {
         // Act & Assert
         assertThrows(NullPointerException.class, () -> {
-            jobPostingAuditHandler.handleJobPostingAudit(null, ack, "key", 0, 1L);
+            jobPostingAuditHandler.handleAudit(null, ack, "key", 0, 1L);
         });
     }
 
     @Test
-    void handleJobPostingAudit_nullAck_throwsException() {
+    void handleAudit_nullAck_throwsException() {
         // Arrange
         setupModelMapperMocks();
         
         // Act & Assert
         assertThrows(NullPointerException.class, () -> {
-            jobPostingAuditHandler.handleJobPostingAudit(testDto, null, "key", 0, 1L);
+            jobPostingAuditHandler.handleAudit(testDto, null, "key", 0, 1L);
         });
     }
 }

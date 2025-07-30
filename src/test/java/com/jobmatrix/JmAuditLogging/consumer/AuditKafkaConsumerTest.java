@@ -2,6 +2,7 @@ package com.jobmatrix.JmAuditLogging.consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jobmatrix.JmAuditLogging.dto.AuditLogDTO;
+import com.jobmatrix.JmAuditLogging.handlers.AuditHandler;
 import com.jobmatrix.JmAuditLogging.handlers.JobPostingAuditHandler;
 import com.jobmatrix.JmAuditLogging.test_utils.factory.AuditLogsTestDataFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +14,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.support.Acknowledgment;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -28,6 +32,8 @@ class AuditKafkaConsumerTest {
 
     @Mock
     private Acknowledgment ack;
+    
+    private Map<String, AuditHandler> handlerMap;
 
     @InjectMocks
     private AuditKafkaConsumer consumer;
@@ -42,6 +48,13 @@ class AuditKafkaConsumerTest {
     void setup() throws Exception {
         messageJson = AuditLogsTestDataFactory.sampleJobPostingKafkaJson();
         testDto = AuditLogsTestDataFactory.sampleJobPostingAuditLogDTO();
+        
+        // Setup handler map with job-posting handler
+        handlerMap = new HashMap<>();
+        handlerMap.put("job-posting", jobPostingAuditHandler);
+        
+        // Inject the handler map into the consumer
+        consumer = new AuditKafkaConsumer(objectMapper, handlerMap);
     }
 
     @Test
@@ -60,7 +73,7 @@ class AuditKafkaConsumerTest {
 
         // Assert
         verify(jobPostingAuditHandler, times(1))
-            .handleJobPostingAudit(dtoCaptor.capture(), eq(ack), eq(key), eq(partition), eq(offset));
+            .handleAudit(dtoCaptor.capture(), eq(ack), eq(key), eq(partition), eq(offset));
         
         AuditLogDTO capturedDto = dtoCaptor.getValue();
         assertNotNull(capturedDto);
@@ -82,7 +95,7 @@ class AuditKafkaConsumerTest {
 
         // Assert
         verify(jobPostingAuditHandler, never())
-            .handleJobPostingAudit(any(), any(), any(), anyInt(), anyLong());
+            .handleAudit(any(), any(), any(), anyInt(), anyLong());
         verify(ack, times(1)).acknowledge();
     }
 
@@ -99,7 +112,7 @@ class AuditKafkaConsumerTest {
         
         verify(ack, never()).acknowledge();
         verify(jobPostingAuditHandler, never())
-            .handleJobPostingAudit(any(), any(), any(), anyInt(), anyLong());
+            .handleAudit(any(), any(), any(), anyInt(), anyLong());
     }
     
     @Test
@@ -112,7 +125,7 @@ class AuditKafkaConsumerTest {
         RuntimeException expectedException = new RuntimeException("Handler failed");
         doThrow(expectedException)
             .when(jobPostingAuditHandler)
-            .handleJobPostingAudit(any(), any(), any(), anyInt(), anyLong());
+            .handleAudit(any(), any(), any(), anyInt(), anyLong());
 
         // Act & Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
