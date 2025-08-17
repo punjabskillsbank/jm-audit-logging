@@ -32,6 +32,28 @@ public class AuditLogsTestDataFactory {
         return entity;
     }
 
+    public static AuditLogDTO sampleClientAuditLogDTO() {
+        return AuditLogDTO.builder()
+                .serviceName("client-service")
+                .entityId(202L)
+                .userId(SAMPLE_USER_ID)
+                .oldData("{\"companyName\": \"Old Client Co.\"}")
+                .newData("{\"companyName\": \"New Client Co.\"}")
+                .build();
+    }
+
+    public static AuditLog sampleClientAuditLogEntity() {
+        AuditLog entity = new AuditLog();
+        entity.setServiceName("client-service");
+        entity.setEntityId(202L);
+        entity.setUserId(SAMPLE_USER_ID);
+        entity.setOldValue("{\"companyName\": \"Old Client Co.\"}");
+        entity.setNewValue("{\"companyName\": \"New Client Co.\"}");
+        entity.setEventType(EventType.CLIENT_PROFILE_UPDATED);
+        entity.setEntityName("Client");
+        return entity;
+    }
+
     public static String sampleJobPostingKafkaJson() {
         return """
                 {
