@@ -47,7 +47,17 @@ public class AuditKafkaConsumer {
                 dto.setUserId(UUID.fromString(rootNode.get("userId").asText()));
             }
             if (rootNode.has("entityId")) {
-                dto.setEntityId(rootNode.get("entityId").asLong());
+                try {
+                    String serviceName = rootNode.get("serviceName").asText().toLowerCase();
+                    if ("client".equals(serviceName) || "freelancer".equals(serviceName)) {
+                        dto.setEntityId(null); // UUID types → store null
+                    } else {
+                        dto.setEntityId(rootNode.get("entityId").asLong()); // Long types → store as is
+                    }
+                } catch (Exception e) {
+                    log.warn("EntityId parsing failed, setting null. Raw value: {}", rootNode.get("entityId"), e);
+                    dto.setEntityId(null);
+                }
             }
             
             // Handle oldData and newData as JSON strings

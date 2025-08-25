@@ -32,6 +32,28 @@ public class AuditLogsTestDataFactory {
         return entity;
     }
 
+    public static AuditLogDTO sampleClientAuditLogDTO() {
+        return AuditLogDTO.builder()
+                .serviceName("client-service")
+                .entityId(null)
+                .userId(SAMPLE_USER_ID)
+                .oldData("{\"companyName\": \"Old Client Co.\"}")
+                .newData("{\"companyName\": \"New Client Co.\"}")
+                .build();
+    }
+
+    public static AuditLog sampleClientAuditLogEntity() {
+        AuditLog entity = new AuditLog();
+        entity.setServiceName("client-service");
+        entity.setEntityId(202L);
+        entity.setUserId(SAMPLE_USER_ID);
+        entity.setOldValue("{\"companyName\": \"Old Client Co.\"}");
+        entity.setNewValue("{\"companyName\": \"New Client Co.\"}");
+        entity.setEventType(EventType.CLIENT_PROFILE_UPDATED);
+        entity.setEntityName("Client");
+        return entity;
+    }
+
     public static String sampleJobPostingKafkaJson() {
         return """
                 {
@@ -44,6 +66,17 @@ public class AuditLogsTestDataFactory {
                 """;
     }
 
+    public static String sampleClientKafkaJson() {
+        return """
+                {
+                  "serviceName": "client",
+                  "entityId": "b9d6c1de-9f04-4f6e-8a72-6b93ffabc123",
+                  "userId": "d290f1ee-6c54-4b01-90e6-d701748f0851",
+                  "oldData": { "companyName": "Old Client Co." },
+                  "newData": { "companyName": "New Client Co." }
+                }
+                """;
+    }
     public static String sampleKafkaJsonWithService(String serviceName) {
         return String.format("""
                 {
