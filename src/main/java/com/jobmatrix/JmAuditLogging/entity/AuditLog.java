@@ -28,14 +28,13 @@ public class AuditLog {
     private String serviceName;
 
     @Enumerated(EnumType.STRING)
-    @JdbcType(PostgreSQLEnumJdbcType.class)
-    @Column(name = "event_type", columnDefinition = "event_type", nullable = false)
+    @Column(name = "event_type", nullable = false, length = 50)
     private EventType eventType;
 
     @Column(name = "entity_name", nullable = false)
     private String entityName;
 
-    @Column(name = "entity_id", nullable = false)
+    @Column(name = "entity_id", nullable = true)
     private Long entityId;
 
     @Column(name = "user_id", nullable = false)

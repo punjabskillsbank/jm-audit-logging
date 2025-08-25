@@ -31,6 +31,9 @@ class AuditKafkaConsumerTest {
     private JobPostingAuditHandler jobPostingAuditHandler;
 
     @Mock
+    private AuditHandler clientAuditHandler;
+
+    @Mock
     private Acknowledgment ack;
     
     private Map<String, AuditHandler> handlerMap;
@@ -52,7 +55,7 @@ class AuditKafkaConsumerTest {
         // Setup handler map with job-posting handler
         handlerMap = new HashMap<>();
         handlerMap.put("job-posting", jobPostingAuditHandler);
-        
+        handlerMap.put("client", clientAuditHandler);
         // Inject the handler map into the consumer
         consumer = new AuditKafkaConsumer(objectMapper, handlerMap);
     }
@@ -80,6 +83,25 @@ class AuditKafkaConsumerTest {
         assertEquals(testDto.getServiceName(), capturedDto.getServiceName());
         assertEquals(testDto.getEntityId(), capturedDto.getEntityId());
     }
+
+    @Test
+    void consume_clientEvent_entityIdIsNull() throws Exception {
+        String clientJson = AuditLogsTestDataFactory.sampleClientKafkaJson();
+        when(objectMapper.readTree(clientJson)).thenReturn(
+                new ObjectMapper().readTree(clientJson)
+        );
+
+        consumer.consume(clientJson, "client-key", 0, 111L, ack);
+
+        verify(clientAuditHandler, times(1))
+                .handleAudit(dtoCaptor.capture(), eq(ack), eq("client-key"), eq(0), eq(111L));
+
+        AuditLogDTO captured = dtoCaptor.getValue();
+        assertNotNull(captured);
+        assertEquals("client", captured.getServiceName());
+        assertNull(captured.getEntityId()); // ✅ entityId should be null
+    }
+
 
     @Test
     void consume_unrecognizedService_acknowledgesWithoutCallingHandler() throws Exception {

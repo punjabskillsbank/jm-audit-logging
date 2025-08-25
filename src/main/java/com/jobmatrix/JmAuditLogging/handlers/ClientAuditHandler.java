@@ -4,6 +4,7 @@ import com.jobmatrix.JmAuditLogging.dto.AuditLogDTO;
 import com.jobmatrix.JmAuditLogging.entity.AuditLog;
 import com.jobmatrix.JmAuditLogging.enums.EventType;
 import com.jobmatrix.JmAuditLogging.repository.AuditLogRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -17,33 +18,36 @@ public class ClientAuditHandler implements AuditHandler {
 
     private final AuditLogRepository auditLogRepository;
     private final ModelMapper modelMapper;
-
     @Override
+    @Transactional
     public void handleAudit(AuditLogDTO dto, Acknowledgment ack, String key, int partition, long offset) throws Exception {
-        // Configure ModelMapper for old/new data mapping
+        // Configure ModelMapper to map between DTO and entity
         modelMapper.typeMap(AuditLogDTO.class, AuditLog.class).addMappings(mapper -> {
             mapper.map(AuditLogDTO::getOldData, AuditLog::setOldValue);
             mapper.map(AuditLogDTO::getNewData, AuditLog::setNewValue);
         });
 
-        // Map DTO to entity
+        // Map DTO to entity using ModelMapper
         AuditLog auditLog = modelMapper.map(dto, AuditLog.class);
 
-        // Set fixed fields
+        // Set fixed values that don't come from DTO
         auditLog.setEventType(EventType.CLIENT_PROFILE_UPDATED);
-        auditLog.setEntityName("Client");
+        auditLog.setEntityName("client");
+
+
+        // Set eventTime will be handled by @CreationTimestamp
 
         try {
+            log.info("Inside ClientAuditHandler, dto = {}", dto);
             auditLogRepository.save(auditLog);
             log.info("Audit log saved for client ID: {}", dto.getEntityId());
-
-            ack.acknowledge(); // Kafka message acknowledged
+            ack.acknowledge(); // Acknowledge the message after successful processing
             log.info("Acknowledged message - Key: {}, Partition: {}, Offset: {}",
                     key, partition, offset);
         } catch (Exception e) {
             log.error("Error processing audit log - Key: {}, Partition: {}, Offset: {}: {}",
                     key, partition, offset, e.getMessage(), e);
-            throw e; // Retry will be triggered if configured
+            throw e; // Will trigger retry if configured
         }
     }
 }

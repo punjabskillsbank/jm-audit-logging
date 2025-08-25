@@ -111,4 +111,16 @@ class ClientAuditHandlerTest {
             clientAuditHandler.handleAudit(testDto, null, "key", 0, 1L);
         });
     }
+
+    @Test
+    void handleAudit_entityIdNull_allowsSave() throws Exception {
+        setupModelMapperMocks();
+        testDto.setEntityId(null);
+
+        clientAuditHandler.handleAudit(testDto, ack, "key", 1, 123L);
+
+        verify(auditLogRepository).save(testAuditLog);
+        verify(ack).acknowledge();
+    }
+
 }

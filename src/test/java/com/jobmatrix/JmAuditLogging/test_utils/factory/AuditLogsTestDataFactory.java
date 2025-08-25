@@ -35,7 +35,7 @@ public class AuditLogsTestDataFactory {
     public static AuditLogDTO sampleClientAuditLogDTO() {
         return AuditLogDTO.builder()
                 .serviceName("client-service")
-                .entityId(202L)
+                .entityId(null)
                 .userId(SAMPLE_USER_ID)
                 .oldData("{\"companyName\": \"Old Client Co.\"}")
                 .newData("{\"companyName\": \"New Client Co.\"}")
@@ -66,6 +66,17 @@ public class AuditLogsTestDataFactory {
                 """;
     }
 
+    public static String sampleClientKafkaJson() {
+        return """
+                {
+                  "serviceName": "client",
+                  "entityId": "b9d6c1de-9f04-4f6e-8a72-6b93ffabc123",
+                  "userId": "d290f1ee-6c54-4b01-90e6-d701748f0851",
+                  "oldData": { "companyName": "Old Client Co." },
+                  "newData": { "companyName": "New Client Co." }
+                }
+                """;
+    }
     public static String sampleKafkaJsonWithService(String serviceName) {
         return String.format("""
                 {
